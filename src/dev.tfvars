@@ -1,0 +1,7 @@
+env                   = "dev"
+resource_location     = "westeurope"
+app_service_plan_size = "B1"
+app_service_plan_tier = "Basic"
+database_sku          = "Basic"
+sql_server_login      = "sql-admin"
+sql_server_password   = "password"
