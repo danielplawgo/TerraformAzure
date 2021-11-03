@@ -94,7 +94,7 @@ resource "azurerm_mssql_database" "sql_database" {
 
 resource "azurerm_sql_firewall_rule" "azure_services_firewall_rule" {
   name                = "azure_services_firewall_rule"
-  resource_group_name = azurerm_resource_group.resource_group.name
+  resource_group_name = var.resource_group_name
   server_name         = azurerm_mssql_server.sql_server.name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
