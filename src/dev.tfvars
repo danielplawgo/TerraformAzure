@@ -1,3 +1,4 @@
+resource_group_name   = "onlin-rg-dev"
 env                   = "dev"
 resource_location     = "westeurope"
 app_service_plan_size = "B1"

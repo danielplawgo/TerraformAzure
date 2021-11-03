@@ -1,3 +1,7 @@
+variable "resource_group_name" {
+  type    = string
+  default = "__resource_group_name__"
+}
 variable "env" {
   type    = string
   default = "__env__"
