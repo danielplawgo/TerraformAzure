@@ -2,34 +2,40 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=2.46.0"
+      version = ">= 2.63"
     }
   }  
   
   backend "azurerm" {
   }
+
+  required_version = ">= 0.14.9"
+
+  backend "azurerm" {
+    storage_account_name = "__tfstorageaccnt__"
+    container_name       = "terraform"
+    key                  = "terraform.tfstate"
+    access_key           = "__storagekey__"
+    features {}
+  }
 }
 
 provider "azurerm" {
+  skip_provider_registration = "true"
   features {}
-}
-
-resource "azurerm_resource_group" "resource_group" {
-  name     = "onlin-rg-${var.env}"
-  location = var.resource_location
 }
 
 resource "azurerm_application_insights" "app_insight" {
   name                = "onlin-ai-${var.env}"
-  location            = azurerm_resource_group.resource_group.location
-  resource_group_name = azurerm_resource_group.resource_group.name
+  location            = var.resource_location
+  resource_group_name = var.resource_group_name
   application_type    = "web"
 }
 
 resource "azurerm_app_service_plan" "app_service_plan" {
   name                = "onlin-sp-${var.env}"
-  location            = azurerm_resource_group.resource_group.location
-  resource_group_name = azurerm_resource_group.resource_group.name
+  location            = var.resource_location
+  resource_group_name = var.resource_group_name
   kind                = "app"
 
   sku {
@@ -40,8 +46,8 @@ resource "azurerm_app_service_plan" "app_service_plan" {
 
 resource "azurerm_app_service" "app" {
   name                    = "onlin-app-${var.env}"
-  location                = azurerm_resource_group.resource_group.location
-  resource_group_name     = azurerm_resource_group.resource_group.name
+  location                = var.resource_location
+  resource_group_name     = var.resource_group_name
   app_service_plan_id     = azurerm_app_service_plan.app_service_plan.id
   https_only              = true
   client_affinity_enabled = true
@@ -68,8 +74,8 @@ resource "azurerm_app_service" "app" {
 
 resource "azurerm_mssql_server" "sql_server" {
   name                         = "onlin-sql-${var.env}"
-  location                     = azurerm_resource_group.resource_group.location
-  resource_group_name          = azurerm_resource_group.resource_group.name
+  location                     = var.resource_location
+  resource_group_name          = var.resource_group_name
   version                      = "12.0"
   administrator_login          = var.sql_server_login
   administrator_login_password = var.sql_server_password
@@ -91,7 +97,7 @@ resource "azurerm_mssql_database" "sql_database" {
 
 resource "azurerm_sql_firewall_rule" "azure_services_firewall_rule" {
   name                = "azure_services_firewall_rule"
-  resource_group_name = azurerm_resource_group.resource_group.name
+  resource_group_name = var.resource_group_name
   server_name         = azurerm_mssql_server.sql_server.name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
